@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Group22_IC09</string>
+    <string name="button_login">Login</string>
+    <string name="button_signUp">Sign Up</string>
+</resources>
