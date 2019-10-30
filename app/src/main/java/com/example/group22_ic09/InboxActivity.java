@@ -1,6 +1,7 @@
 package com.example.group22_ic09;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -31,15 +32,16 @@ import okhttp3.Response;
 
 public class InboxActivity extends AppCompatActivity {
     String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NzIzMDQ4NTgsImV4cCI6MTYwMzkyNzI1OCwianRpIjoiMzdkN2M2RTFLbWVRdk1wM0R5WDFVVSIsInVzZXIiOjY2fQ._PUvkyPJw5VWY2fuItT9EkdRZQANDzfm3ZJMA16BXbc";
-    ListView listView;
+    RecyclerView listView;
     ArrayList<InboxData> MailList = new ArrayList<>();
     ArrayList<String> MailIDs =new ArrayList<>();
-
+    IndoxListViewAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inbox);
-        listView = findViewById(R.id.listview);
+        listView = findViewById(R.id.RecyclerView);
+        Log.d("trying to recycler", "onCreate: ");
         getMails();
     }
 
@@ -75,12 +77,16 @@ public class InboxActivity extends AppCompatActivity {
                         MailIDs.add(mail.id);
                     }
                     Log.d("test", "onResponse: " + MailList.toString());
-                    IndoxListViewAdapter adapter = new IndoxListViewAdapter(InboxActivity.this, R.layout.inbox_listview, MailList);
-                    listView.setAdapter(adapter);
-                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    runOnUiThread(new Runnable() {
                         @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            Toast.makeText(getApplicationContext(), "Opening Mail ", Toast.LENGTH_LONG).show();
+                        public void run() {
+                            adapter = new IndoxListViewAdapter(MailList, new IndoxListViewAdapter.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(InboxData item) {
+                                    Toast.makeText(getApplicationContext(), "Item Clicked", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                            listView.setAdapter(adapter);
                         }
                     });
 
@@ -111,14 +117,12 @@ public class InboxActivity extends AppCompatActivity {
                 int index = MailIDs.indexOf(data.id);
                 MailIDs.remove(index);
                 MailList.remove(index);
-            }
-        });
-        IndoxListViewAdapter adapter = new IndoxListViewAdapter(InboxActivity.this, R.layout.inbox_listview, MailList);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(getApplicationContext(), "Opening Mail ", Toast.LENGTH_LONG).show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
             }
         });
     }

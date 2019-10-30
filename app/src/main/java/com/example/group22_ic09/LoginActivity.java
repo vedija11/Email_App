@@ -59,35 +59,32 @@ public class LoginActivity extends AppCompatActivity {
 
                 String email = et_email.toString();
                 String password = et_password.toString();
+                try {
+                    OkHttpClient client = new OkHttpClient();
 
-                final OkHttpClient client = new OkHttpClient();
-
-                RequestBody formBody = new FormBody.Builder()
-                        .add("email", "vedija@test.com")
-                        .add("password", "11011995")
-                        .build();
+                    RequestBody formBody = new FormBody.Builder()
+                            .add("email", "vedija@test.com")
+                            .add("password", "11011995")
+                            .build();
 
                     Request request = new Request.Builder()
                             .url("http://ec2-18-234-222-229.compute-1.amazonaws.com/api/login")
                             .post(formBody)
                             .build();
+//                    Request request = new Request.Builder()
+//                            .url("http://ec2-18-234-222-229.compute-1.amazonaws.com/api/inbox").addHeader("Authorization", "BEARER " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NzI0MTU2OTYsImV4cCI6MTYwNDAzODA5NiwianRpIjoiNG1xZUxTTGwzTnFPcVBuYTRWWnJrayIsInVzZXIiOjcwfQ.sDpJ-cQz2kb_L7AuEYPOK_DsLBFpiCwHXUHRgaSuqc0")
+//                            .build();
 
                     client.newCall(request).enqueue(new Callback() {
-                        @Override public void onFailure(Call call, IOException e) {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
                             e.printStackTrace();
                         }
 
-                        @Override public void onResponse(Call call, Response response) throws IOException {
-                            try (ResponseBody responseBody = response.body()) {
-                                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
-                                Headers responseHeaders = response.headers();
-                                for (int i = 0, size = responseHeaders.size(); i < size; i++) {
-                                    System.out.println(responseHeaders.name(i) + ": " + responseHeaders.value(i));
-                                }
-
-                                System.out.println(responseBody.string());
-                                JSONObject root = new JSONObject(responseBody.string());
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            try {
+                                JSONObject root = new JSONObject(response.body().string());
                                 user.status = root.getString("status");
                                 user.token = root.getString("token");
                                 user.user_id = root.getString("user_id");
@@ -105,23 +102,27 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.putString("UserDetails", userInfoListJsonString);
                                 editor.commit();
 
-                                //String userInfoListJsonString1 = sharedPreferences.getString("UserDetails", "");
-                                //user =gson.fromJson(userInfoListJsonString1, User.class);
-                                //Log.d("user", String.valueOf(user));
-                                Log.d("userInfoListJsonString", userInfoListJsonString);
-                                //Log.d("token", userInfoListJsonString);
-                            } catch (JSONException e) {
+                            String userInfoListJsonString1 = sharedPreferences.getString("UserDetails", "");
+                            user =gson.fromJson(userInfoListJsonString1, User.class);
+                            Log.d("user", String.valueOf(user));
+                            Log.d("userInfoListJsonString", userInfoListJsonString);
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
                     });
+                }
+                catch (Exception e)
+                {
+                    Log.d("test", "onClick: "+e);
+                }
             }
         });
 
         button_signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+                Intent intent = new Intent(LoginActivity.this, InboxActivity.class);
                 startActivity(intent);
                 finish();
             }
