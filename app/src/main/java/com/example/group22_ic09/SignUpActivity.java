@@ -3,10 +3,15 @@ package com.example.group22_ic09;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import java.io.IOException;
 
@@ -23,6 +28,7 @@ import okhttp3.ResponseBody;
 public class SignUpActivity extends AppCompatActivity {
     EditText et_fname, et_lname, et_email, et_cPass, et_password;
     Button buttonSignUp, button_cancel;
+    User newUser = new User();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,36 +56,60 @@ public class SignUpActivity extends AppCompatActivity {
         buttonSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final OkHttpClient client = new OkHttpClient();
 
-                RequestBody formBody = new FormBody.Builder()
-                        .add("email", "vedija@test.com")
-                        .add("password", "11011995")
-                        .build();
+                String firstName = et_fname.getText().toString();
+                String lastName = et_lname.getText().toString();
+                String email = et_email.getText().toString();
+                String confirmPassword = et_cPass.getText().toString();
+                String repeatPassword = et_password.getText().toString();
+                Log.d("password", confirmPassword + repeatPassword);
 
-                Request request = new Request.Builder()
-                        .url("http://ec2-18-234-222-229.compute-1.amazonaws.com/api/signup")
-                        .post(formBody)
-                        .build();
+                if(confirmPassword.equals(repeatPassword)){
+                    String password = repeatPassword;
 
-                client.newCall(request).enqueue(new Callback() {
-                    @Override public void onFailure(Call call, IOException e) {
-                        e.printStackTrace();
-                    }
+                    SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
+                    String getuserInfoListJsonString = sharedPreferences.getString("UserDetails", "");
+                    Gson gson = new Gson();
+                    newUser = gson.fromJson(getuserInfoListJsonString, User.class);
+                    String token = String.valueOf(newUser.token);
+                    Log.d("token", token);
 
-                    @Override public void onResponse(Call call, Response response) throws IOException {
-                        try (ResponseBody responseBody = response.body()) {
-                            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                    final OkHttpClient client = new OkHttpClient();
 
-                            Headers responseHeaders = response.headers();
-                            for (int i = 0, size = responseHeaders.size(); i < size; i++) {
-                                System.out.println(responseHeaders.name(i) + ": " + responseHeaders.value(i));
-                            }
+                    RequestBody formBody = new FormBody.Builder()
+                            .add("user_email", email)
+                            .add("user_fname", firstName)
+                            .add("user_lname", lastName)
+                            //.add("token", token)
+                            .build();
 
-                            System.out.println(responseBody.string());
+                    Request request = new Request.Builder()
+                            .url("http://ec2-18-234-222-229.compute-1.amazonaws.com/api/signup")
+                            .post(formBody)
+                            .build();
+
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override public void onFailure(Call call, IOException e) {
+                            e.printStackTrace();
                         }
-                    }
-                });
+
+                        @Override public void onResponse(Call call, Response response) throws IOException {
+                            try (ResponseBody responseBody = response.body()) {
+                                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+
+                                Headers responseHeaders = response.headers();
+                                for (int i = 0, size = responseHeaders.size(); i < size; i++) {
+                                    System.out.println(responseHeaders.name(i) + ": " + responseHeaders.value(i));
+                                }
+
+                                System.out.println(responseBody.string());
+                            }
+                        }
+                    });
+                } else {
+                    Toast.makeText(SignUpActivity.this, "Passwords do not match!", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 

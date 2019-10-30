@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                                 }
 
                                 System.out.println(responseBody.string());
-                                String jsonData = JSON.parse(responseBody);
+                                //String jsonData = JSON.parse(responseBody);
 
                                 Gson gson = new Gson();
                                 String userInfoListJsonString = gson.toJson(user);
