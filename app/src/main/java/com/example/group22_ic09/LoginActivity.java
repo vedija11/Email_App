@@ -16,10 +16,14 @@ import android.widget.EditText;
 import com.google.gson.Gson;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -36,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText et_email, et_password;
     Button button_login, button_signUp;
     User user = new User();
+    ArrayList<User> userArrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +87,16 @@ public class LoginActivity extends AppCompatActivity {
                                 }
 
                                 System.out.println(responseBody.string());
-                                //String jsonData = JSON.parse(responseBody);
+                                JSONObject root = new JSONObject(responseBody.string());
+                                user.status = root.getString("status");
+                                user.token = root.getString("token");
+                                user.user_id = root.getString("user_id");
+                                user.user_email = root.getString("user_email");
+                                user.user_fname = root.getString("user_fname");
+                                user.user_lname = root.getString("user_lname");
+                                user.user_role = root.getString("user_role");
+                                userArrayList.add(user);
+                                Log.d("userArrayList", userArrayList.toString());
 
                                 Gson gson = new Gson();
                                 String userInfoListJsonString = gson.toJson(user);
@@ -96,6 +110,8 @@ public class LoginActivity extends AppCompatActivity {
                                 //Log.d("user", String.valueOf(user));
                                 Log.d("userInfoListJsonString", userInfoListJsonString);
                                 //Log.d("token", userInfoListJsonString);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
                         }
                     });
