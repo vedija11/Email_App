@@ -1,6 +1,7 @@
 package com.example.group22_ic09;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
@@ -34,13 +35,24 @@ public class InboxActivity extends AppCompatActivity {
     String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NzIzMDQ4NTgsImV4cCI6MTYwMzkyNzI1OCwianRpIjoiMzdkN2M2RTFLbWVRdk1wM0R5WDFVVSIsInVzZXIiOjY2fQ._PUvkyPJw5VWY2fuItT9EkdRZQANDzfm3ZJMA16BXbc";
     RecyclerView listView;
     ArrayList<InboxData> MailList = new ArrayList<>();
-    ArrayList<String> MailIDs =new ArrayList<>();
+    ArrayList<String> MailIDs = new ArrayList<>();
     IndoxListViewAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inbox);
         listView = findViewById(R.id.RecyclerView);
+        listView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        adapter = new IndoxListViewAdapter(MailList, new IndoxListViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(InboxData item) {
+                Toast.makeText(getApplicationContext(), "Item Clicked", Toast.LENGTH_LONG).show();
+            }
+        });
+        listView.setAdapter(adapter);
+        Log.d("after", "onCreate: ");
+
         Log.d("trying to recycler", "onCreate: ");
         getMails();
     }
@@ -77,22 +89,17 @@ public class InboxActivity extends AppCompatActivity {
                         MailIDs.add(mail.id);
                     }
                     Log.d("test", "onResponse: " + MailList.toString());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter = new IndoxListViewAdapter(MailList, new IndoxListViewAdapter.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(InboxData item) {
-                                    Toast.makeText(getApplicationContext(), "Item Clicked", Toast.LENGTH_LONG).show();
-                                }
-                            });
-                            listView.setAdapter(adapter);
-                        }
-                    });
+
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
             }
         });
     }
@@ -126,21 +133,4 @@ public class InboxActivity extends AppCompatActivity {
             }
         });
     }
-
-//    private class GetMails extends AsyncTask<String, Void, ArrayList<InboxData>> {
-//        @Override
-//        protected ArrayList<InboxData> doInBackground(String... strings) {
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//        }
-//
-//        @Override
-//        protected void onPostExecute(ArrayList<InboxData> inboxData) {
-//            super.onPostExecute(inboxData);
-//        }
-//    }
 }
