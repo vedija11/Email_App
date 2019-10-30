@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -40,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText et_email, et_password;
     Button button_login, button_signUp;
     User user = new User();
-    ArrayList<User> userArrayList = new ArrayList<>();
+    String email, password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,23 +58,21 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                String email = et_email.toString();
-                String password = et_password.toString();
+                email = et_email.getText().toString();
+                password = et_password.getText().toString();
+                Log.d("email&pass", email+" " +password);
                 try {
                     OkHttpClient client = new OkHttpClient();
 
                     RequestBody formBody = new FormBody.Builder()
-                            .add("email", "vedija@test.com")
-                            .add("password", "11011995")
+                            .add("email", email)
+                            .add("password", password)
                             .build();
 
                     Request request = new Request.Builder()
                             .url("http://ec2-18-234-222-229.compute-1.amazonaws.com/api/login")
                             .post(formBody)
                             .build();
-//                    Request request = new Request.Builder()
-//                            .url("http://ec2-18-234-222-229.compute-1.amazonaws.com/api/inbox").addHeader("Authorization", "BEARER " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NzI0MTU2OTYsImV4cCI6MTYwNDAzODA5NiwianRpIjoiNG1xZUxTTGwzTnFPcVBuYTRWWnJrayIsInVzZXIiOjcwfQ.sDpJ-cQz2kb_L7AuEYPOK_DsLBFpiCwHXUHRgaSuqc0")
-//                            .build();
 
                     client.newCall(request).enqueue(new Callback() {
                         @Override
@@ -84,29 +83,44 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
                             try {
-                                JSONObject root = new JSONObject(response.body().string());
-                                user.status = root.getString("status");
-                                user.token = root.getString("token");
-                                user.user_id = root.getString("user_id");
-                                user.user_email = root.getString("user_email");
-                                user.user_fname = root.getString("user_fname");
-                                user.user_lname = root.getString("user_lname");
-                                user.user_role = root.getString("user_role");
-                                userArrayList.add(user);
-                                Log.d("userArrayList", userArrayList.toString());
+                                if(response.isSuccessful()){
+                                    JSONObject root = new JSONObject(response.body().string());
+                                    user.status = root.getString("status");
+                                    user.token = root.getString("token");
+                                    user.user_id = root.getString("user_id");
+                                    user.user_email = root.getString("user_email");
+                                    user.user_fname = root.getString("user_fname");
+                                    user.user_lname = root.getString("user_lname");
+                                    user.user_role = root.getString("user_role");
+                                    Log.d("user", user.toString());
+                                    Log.d("token", user.token);
 
-                                Gson gson = new Gson();
-                                String userInfoListJsonString = gson.toJson(user);
-                                SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.putString("UserDetails", userInfoListJsonString);
-                                editor.commit();
+                                    //if(user.status.equals("ok")){
+                                        Gson gson = new Gson();
+                                        String userInfoListJsonString = gson.toJson(user);
+                                        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                        editor.putString("UserDetails", userInfoListJsonString);
+                                        editor.commit();
 
-                            String userInfoListJsonString1 = sharedPreferences.getString("UserDetails", "");
-                            user =gson.fromJson(userInfoListJsonString1, User.class);
-                            Log.d("user", String.valueOf(user));
-                            Log.d("userInfoListJsonString", userInfoListJsonString);
+                                        Intent emailIntent = new Intent(LoginActivity.this, InboxActivity.class);
+                                        startActivity(emailIntent);
+                                        finish();
+                                    /*} else {
+                                        Toast.makeText(LoginActivity.this, "Login unsuccessful!", Toast.LENGTH_SHORT).show();
+                                    }  */
+                                } else {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(LoginActivity.this, "Login unsuccessful!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+
+
                             } catch (Exception e) {
+                                System.out.println("11111111111111");
                                 e.printStackTrace();
                             }
                         }
@@ -122,8 +136,8 @@ public class LoginActivity extends AppCompatActivity {
         button_signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, InboxActivity.class);
-                startActivity(intent);
+                Intent signUpIntent = new Intent(LoginActivity.this, SignUpActivity.class);
+                startActivity(signUpIntent);
                 finish();
             }
         });

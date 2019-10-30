@@ -13,7 +13,10 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -29,6 +32,8 @@ public class SignUpActivity extends AppCompatActivity {
     EditText et_fname, et_lname, et_email, et_cPass, et_password;
     Button buttonSignUp, button_cancel;
     User newUser = new User();
+    ArrayList<User> globalUserList = new ArrayList<>();
+    String firstName, lastName, emailID, choosePassword, repeatPassword, password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,30 +62,23 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                String firstName = et_fname.getText().toString();
-                String lastName = et_lname.getText().toString();
-                String email = et_email.getText().toString();
-                String confirmPassword = et_cPass.getText().toString();
-                String repeatPassword = et_password.getText().toString();
-                Log.d("password", confirmPassword + repeatPassword);
+                firstName = et_fname.getText().toString();
+                lastName = et_lname.getText().toString();
+                emailID = et_email.getText().toString();
+                choosePassword = et_cPass.getText().toString();
+                repeatPassword = et_password.getText().toString();
+                Log.d("password", choosePassword + repeatPassword);
 
-                if(confirmPassword.equals(repeatPassword)){
-                    String password = repeatPassword;
+                if (choosePassword.equals(repeatPassword)) {
+                    password = repeatPassword;
 
-                    SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
-                    String getuserInfoListJsonString = sharedPreferences.getString("UserDetails", "");
-                    Gson gson = new Gson();
-                    newUser = gson.fromJson(getuserInfoListJsonString, User.class);
-                    String token = String.valueOf(newUser.token);
-                    Log.d("token", token);
-
-                    final OkHttpClient client = new OkHttpClient();
+                    OkHttpClient client = new OkHttpClient();
 
                     RequestBody formBody = new FormBody.Builder()
-                            .add("user_email", email)
-                            .add("user_fname", firstName)
-                            .add("user_lname", lastName)
-                            //.add("token", token)
+                            .add("email", emailID)
+                            .add("password", password)
+                            .add("fname", firstName)
+                            .add("lname", lastName)
                             .build();
 
                     Request request = new Request.Builder()
@@ -89,21 +87,60 @@ public class SignUpActivity extends AppCompatActivity {
                             .build();
 
                     client.newCall(request).enqueue(new Callback() {
-                        @Override public void onFailure(Call call, IOException e) {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
                             e.printStackTrace();
                         }
 
-                        @Override public void onResponse(Call call, Response response) throws IOException {
-                            try (ResponseBody responseBody = response.body()) {
-                                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            try {
+                                if(response.isSuccessful()){
+                                    JSONObject root = new JSONObject(response.body().string());
+                                    newUser.status = root.getString("status");
+                                    newUser.token = root.getString("token");
+                                    newUser.user_id = root.getString("user_id");
+                                    newUser.user_email = root.getString("user_email");
+                                    newUser.user_fname = root.getString("user_fname");
+                                    newUser.user_lname = root.getString("user_lname");
+                                    newUser.user_role = root.getString("user_role");
+                                    globalUserList.add(newUser);
+                                    Log.d("globalUserList", globalUserList.toString());
+                                    Log.d("token in signup Activity", newUser.token);
 
-                                Headers responseHeaders = response.headers();
-                                for (int i = 0, size = responseHeaders.size(); i < size; i++) {
-                                    System.out.println(responseHeaders.name(i) + ": " + responseHeaders.value(i));
+                                    //if(newUser.status.equals("ok")){
+                                        Gson gson = new Gson();
+                                        String userInfoListJsonString = gson.toJson(newUser);
+                                        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                        editor.putString("NewUserDetails", userInfoListJsonString);
+                                        editor.commit();
+
+                                        Toast.makeText(SignUpActivity.this, "User created successfully!", Toast.LENGTH_SHORT).show();
+                                        Intent emailIntent = new Intent(SignUpActivity.this, InboxActivity.class);
+                                        startActivity(emailIntent);
+                                        finish();
+                                    /*} else {
+                                        Toast.makeText(SignUpActivity.this, newUser.status, Toast.LENGTH_SHORT).show();
+                                    }*/
+                                } else {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(SignUpActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
                                 }
 
-                                System.out.println(responseBody.string());
+                                //String userInfoListJsonString1 = sharedPreferences.getString("NewUserDetails", "");
+                                //user =gson.fromJson(userInfoListJsonString1, User.class);
+                                //Log.d("user", String.valueOf(user));
+                                //Log.d("userInfoListJsonString", userInfoListJsonString);
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
+
                         }
                     });
                 } else {
