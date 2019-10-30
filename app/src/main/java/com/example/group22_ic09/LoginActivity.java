@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.gson.Gson;
+
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -33,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
 
     EditText et_email, et_password;
     Button button_login, button_signUp;
+    User user = new User();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +58,8 @@ public class LoginActivity extends AppCompatActivity {
                 final OkHttpClient client = new OkHttpClient();
 
                 RequestBody formBody = new FormBody.Builder()
-                        .add("email", email)
-                        .add("password", password)
+                        .add("email", "vedija@test.com")
+                        .add("password", "11011995")
                         .build();
 
                     Request request = new Request.Builder()
@@ -79,7 +82,20 @@ public class LoginActivity extends AppCompatActivity {
                                 }
 
                                 System.out.println(responseBody.string());
+                                String jsonData = JSON.parse(responseBody);
+
+                                Gson gson = new Gson();
+                                String userInfoListJsonString = gson.toJson(user);
                                 SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("UserDetails", userInfoListJsonString);
+                                editor.commit();
+
+                                //String userInfoListJsonString1 = sharedPreferences.getString("UserDetails", "");
+                                //user =gson.fromJson(userInfoListJsonString1, User.class);
+                                //Log.d("user", String.valueOf(user));
+                                Log.d("userInfoListJsonString", userInfoListJsonString);
+                                //Log.d("token", userInfoListJsonString);
                             }
                         }
                     });
