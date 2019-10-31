@@ -1,25 +1,23 @@
 package com.example.group22_ic09;
 
-import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class IndoxListViewAdapter extends RecyclerView.Adapter<IndoxListViewAdapter.ViewHolder> {
     List<InboxData> mList;
     private final OnItemClickListener listener;
+    String setDate;
 
     public IndoxListViewAdapter(List<InboxData> mList, OnItemClickListener listener) {
         this.mList = mList;
@@ -42,8 +40,15 @@ public class IndoxListViewAdapter extends RecyclerView.Adapter<IndoxListViewAdap
         holder.bind(mList.get(position), listener);
         InboxData mail = mList.get(position);
 
+        if(!mail.created_at.equals("null")){
+            //Date date = new Date();
+            setDate = DateFormat.getDateInstance(DateFormat.MEDIUM).format(mail.created_at);
+            Log.d("date", setDate);
+        } else {
+            setDate = mail.created_at;
+        }
 
-        holder.tv_date.setText(mail.created_at);
+        holder.tv_date.setText(setDate);
         holder.tv_subject.setText(mail.subject);
         holder.tv_subject.setFocusable(false);
         holder.tv_date.setFocusable(false);

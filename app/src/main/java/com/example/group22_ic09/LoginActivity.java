@@ -1,12 +1,16 @@
+/*
+* Group No: 22
+* Members: Neeraj Auti
+*           Vedija Jagtap
+* */
+
 package com.example.group22_ic09;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,26 +19,16 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-
-import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
-import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -49,7 +43,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         setTitle("Mailer");
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
-       // if (sharedPreferences.contains("UserDetails")) {
             String userInfoListJsonString = sharedPreferences.getString("UserDetails", "");
             Log.d("email&pass", userInfoListJsonString);
             if (!userInfoListJsonString.equals("")) {

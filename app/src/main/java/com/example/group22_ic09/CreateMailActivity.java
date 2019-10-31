@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.hardware.camera2.TotalCaptureResult;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,7 +21,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -69,7 +67,7 @@ public class CreateMailActivity extends AppCompatActivity {
             public void onClick(View view) {
                 int index = dd_userList.getSelectedItemPosition();
                 if (index != 0) {
-                    User selected_user = users.get(index);
+                    User selected_user = users.get(index-1);
                     OkHttpClient okHttpClient = new OkHttpClient();
                     RequestBody formBody = new FormBody.Builder()
                             .add("receiver_id", selected_user.user_id)
@@ -88,7 +86,14 @@ public class CreateMailActivity extends AppCompatActivity {
 
                         @Override
                         public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                            Toast.makeText(CreateMailActivity.this, "Mail Sent", Toast.LENGTH_SHORT).show();
+                            Log.d("response", response.toString());
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(CreateMailActivity.this, "Mail Sent", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
                             Intent InboxIntent = new Intent();
                             InboxIntent.setData(null);
                             finish();

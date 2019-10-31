@@ -22,12 +22,10 @@ import java.util.ArrayList;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
-import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public class SignUpActivity extends AppCompatActivity {
     EditText et_fname, et_lname, et_email, et_cPass, et_password;
@@ -68,7 +66,6 @@ public class SignUpActivity extends AppCompatActivity {
                 emailID = et_email.getText().toString();
                 choosePassword = et_cPass.getText().toString();
                 repeatPassword = et_password.getText().toString();
-                Log.d("password", choosePassword + repeatPassword);
 
                 if (choosePassword.equals(repeatPassword)) {
                     password = repeatPassword;

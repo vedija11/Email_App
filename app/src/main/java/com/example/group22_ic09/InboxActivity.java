@@ -7,25 +7,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.InetAddresses;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -87,8 +78,16 @@ public class InboxActivity extends AppCompatActivity {
         adapter = new IndoxListViewAdapter(MailList, new IndoxListViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(InboxData item) {
-                InboxData selected_mail =MailList.get(MailList.indexOf((InboxData)item));
-                Toast.makeText(getApplicationContext(), "Item Clicked " + selected_mail.subject, Toast.LENGTH_SHORT).show();
+                InboxData selected_mail = MailList.get(MailList.indexOf((InboxData)item));
+
+                Intent displayIntent = new Intent(InboxActivity.this, DisplayActivity.class);
+                displayIntent.putExtra("SenderFName", selected_mail.sender_fname);
+                displayIntent.putExtra("SenderLName", selected_mail.sender_lname);
+                displayIntent.putExtra("EmailSubject", selected_mail.subject);
+                displayIntent.putExtra("EmailMessage", selected_mail.message);
+                displayIntent.putExtra("EmailDate", selected_mail.created_at);
+                startActivity(displayIntent);
+                finish();
             }
         });
         listView.setAdapter(adapter);
