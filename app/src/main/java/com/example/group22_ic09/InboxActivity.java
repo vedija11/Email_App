@@ -87,7 +87,8 @@ public class InboxActivity extends AppCompatActivity {
         adapter = new IndoxListViewAdapter(MailList, new IndoxListViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(InboxData item) {
-                Toast.makeText(getApplicationContext(), "Item Clicked", Toast.LENGTH_LONG).show();
+                InboxData selected_mail =MailList.get(MailList.indexOf((InboxData)item));
+                Toast.makeText(getApplicationContext(), "Item Clicked " + selected_mail.subject, Toast.LENGTH_SHORT).show();
             }
         });
         listView.setAdapter(adapter);
