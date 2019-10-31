@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.InetAddresses;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -16,7 +17,10 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -38,12 +42,39 @@ public class InboxActivity extends AppCompatActivity {
     ArrayList<InboxData> MailList = new ArrayList<>();
     ArrayList<String> MailIDs = new ArrayList<>();
     IndoxListViewAdapter adapter;
+    ImageButton btn_createMail,btn_logout;
+    TextView tv_currentUser;
+    User user = new User();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inbox);
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
+        if (sharedPreferences.contains("UserDetails")) {
+            String userInfoListJsonString = sharedPreferences.getString("UserDetails", "");
+            Gson gson = new Gson();
+            user = gson.fromJson(userInfoListJsonString, User.class);
+            Log.d("test3", "onCreate: 123 " + user);
+        }
         listView = findViewById(R.id.RecyclerView);
+        btn_createMail = findViewById(R.id.btn_createMail);
+        btn_logout= findViewById(R.id.btn_logout);
+        tv_currentUser = findViewById(R.id.tv_currentUser);
+        tv_currentUser.setText(user.user_fname+" "+user.user_lname);
+        btn_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("UserDetails", "");
+                editor.commit();
+                Intent loginIntent = new Intent(InboxActivity.this, LoginActivity.class);
+                startActivity(loginIntent);
+                finish();
+
+            }
+        });
         listView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         adapter = new IndoxListViewAdapter(MailList, new IndoxListViewAdapter.OnItemClickListener() {
             @Override
@@ -59,12 +90,10 @@ public class InboxActivity extends AppCompatActivity {
     }
 
     public void getMails() {
-        Intent getTokenIntent = getIntent();
-        token = getTokenIntent.getStringExtra("tokenValue");
 
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("http://ec2-18-234-222-229.compute-1.amazonaws.com/api/inbox").addHeader("Authorization", "BEARER " + token)
+                .url("http://ec2-18-234-222-229.compute-1.amazonaws.com/api/inbox").addHeader("Authorization", "BEARER " + user.token)
                 .build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override

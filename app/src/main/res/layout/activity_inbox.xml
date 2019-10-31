@@ -7,7 +7,7 @@
     tools:context=".InboxActivity">
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/btn_createMail"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_marginStart="16dp"
@@ -18,36 +18,36 @@
         app:srcCompat="@drawable/addnew" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/btn_logout"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:layout_marginStart="37dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:scaleType="fitCenter"
-        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/logout" />
 
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="166dp"
+        android:id="@+id/tv_currentUser"
+        android:layout_width="wrap_content"
         android:layout_height="44dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="35dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="28dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
         android:text="TextView"
         android:textColor="#000000"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/imageButton"
+        app:layout_constraintStart_toEndOf="@+id/btn_createMail"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="620dp"
+        android:layout_height="520dp"
         android:layout_marginTop="25dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_createMail" />
 </androidx.constraintlayout.widget.ConstraintLayout>
