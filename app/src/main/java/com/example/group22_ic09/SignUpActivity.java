@@ -118,6 +118,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                                         Toast.makeText(SignUpActivity.this, "User created successfully!", Toast.LENGTH_SHORT).show();
                                         Intent emailIntent = new Intent(SignUpActivity.this, InboxActivity.class);
+                                        emailIntent.putExtra("tokenValue", newUser.token);
                                         startActivity(emailIntent);
                                         finish();
                                     /*} else {

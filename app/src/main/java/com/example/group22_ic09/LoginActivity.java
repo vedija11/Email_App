@@ -104,6 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                                         editor.commit();
 
                                         Intent emailIntent = new Intent(LoginActivity.this, InboxActivity.class);
+                                        emailIntent.putExtra("tokenValue", user.token);
                                         startActivity(emailIntent);
                                         finish();
                                     /*} else {
