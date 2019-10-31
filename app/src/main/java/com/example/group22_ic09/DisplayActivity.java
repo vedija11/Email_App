@@ -28,8 +28,8 @@ public class DisplayActivity extends AppCompatActivity {
 
         Intent newIntent = getIntent();
         senderFName = newIntent.getStringExtra("SenderFName");
-        senderLName = emailSubject = newIntent.getStringExtra("SenderLName");
-        emailMessage= newIntent.getStringExtra("EmailSubject");
+        senderLName = newIntent.getStringExtra("SenderLName");
+        emailSubject= newIntent.getStringExtra("EmailSubject");
         emailMessage = newIntent.getStringExtra("EmailMessage");
         emailDate= newIntent.getStringExtra("EmailDate");
 

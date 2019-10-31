@@ -66,13 +66,15 @@ public class CreateMailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 int index = dd_userList.getSelectedItemPosition();
-                if (index != 0) {
+                String subject =et_subject.getText().toString();
+                String message =et_message.getText().toString();
+                if (index != 0 || !subject.equals("") || !message.equals("")) {
                     User selected_user = users.get(index-1);
                     OkHttpClient okHttpClient = new OkHttpClient();
                     RequestBody formBody = new FormBody.Builder()
                             .add("receiver_id", selected_user.user_id)
-                            .add("subject", et_subject.getText().toString())
-                            .add("message", et_message.getText().toString())
+                            .add("subject",subject )
+                            .add("message", message)
                             .build();
                     Request request = new Request.Builder()
                             .url("http://ec2-18-234-222-229.compute-1.amazonaws.com/api/inbox/add").addHeader("Authorization", "BEARER " + current_user.token)
@@ -100,7 +102,11 @@ public class CreateMailActivity extends AppCompatActivity {
                         }
                     });
                 } else
-                    Toast.makeText(CreateMailActivity.this, "Please select a user", Toast.LENGTH_SHORT).show();
+                {
+                    if(index==0)Toast.makeText(CreateMailActivity.this, "Please select a user", Toast.LENGTH_SHORT).show();
+                    if(subject.equals("")) Toast.makeText(CreateMailActivity.this, "Enter Subject", Toast.LENGTH_SHORT).show();
+                    if(message.equals("")) Toast.makeText(CreateMailActivity.this, "Enter Message", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         btn_cancel.setOnClickListener(new View.OnClickListener() {
