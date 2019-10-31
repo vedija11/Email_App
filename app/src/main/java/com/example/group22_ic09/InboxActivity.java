@@ -1,5 +1,6 @@
 package com.example.group22_ic09;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,12 +38,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class InboxActivity extends AppCompatActivity {
-    String token; //= "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NzIzMDQ4NTgsImV4cCI6MTYwMzkyNzI1OCwianRpIjoiMzdkN2M2RTFLbWVRdk1wM0R5WDFVVSIsInVzZXIiOjY2fQ._PUvkyPJw5VWY2fuItT9EkdRZQANDzfm3ZJMA16BXbc";
     RecyclerView listView;
     ArrayList<InboxData> MailList = new ArrayList<>();
     ArrayList<String> MailIDs = new ArrayList<>();
     IndoxListViewAdapter adapter;
-    ImageButton btn_createMail,btn_logout;
+    ImageButton btn_createMail, btn_logout;
     TextView tv_currentUser;
     User user = new User();
 
@@ -50,6 +50,7 @@ public class InboxActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inbox);
+        setTitle("Inbox");
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
         if (sharedPreferences.contains("UserDetails")) {
             String userInfoListJsonString = sharedPreferences.getString("UserDetails", "");
@@ -59,9 +60,9 @@ public class InboxActivity extends AppCompatActivity {
         }
         listView = findViewById(R.id.RecyclerView);
         btn_createMail = findViewById(R.id.btn_createMail);
-        btn_logout= findViewById(R.id.btn_logout);
+        btn_logout = findViewById(R.id.btn_logout);
         tv_currentUser = findViewById(R.id.tv_currentUser);
-        tv_currentUser.setText(user.user_fname+" "+user.user_lname);
+        tv_currentUser.setText(user.user_fname + " " + user.user_lname);
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -73,6 +74,13 @@ public class InboxActivity extends AppCompatActivity {
                 startActivity(loginIntent);
                 finish();
 
+            }
+        });
+        btn_createMail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent createMail = new Intent(InboxActivity.this, CreateMailActivity.class);
+                startActivityForResult(createMail, 100);
             }
         });
         listView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -143,7 +151,7 @@ public class InboxActivity extends AppCompatActivity {
 
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("http://ec2-18-234-222-229.compute-1.amazonaws.com/api/inbox/delete/" + data.id).addHeader("Authorization", "BEARER " + token)
+                .url("http://ec2-18-234-222-229.compute-1.amazonaws.com/api/inbox/delete/" + data.id).addHeader("Authorization", "BEARER " + user.token)
                 .build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
@@ -153,6 +161,7 @@ public class InboxActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+
                 Log.d("test", "Mail Deleted: " + data.subject);
                 int index = MailIDs.indexOf(data.id);
                 MailIDs.remove(index);
@@ -165,5 +174,12 @@ public class InboxActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        MailIDs.clear();
+        MailList.clear();
+        getMails();
     }
 }

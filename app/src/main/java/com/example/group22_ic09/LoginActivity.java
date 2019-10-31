@@ -49,12 +49,11 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         setTitle("Mailer");
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
-        if (sharedPreferences.contains("UserDetails")) {
+       // if (sharedPreferences.contains("UserDetails")) {
             String userInfoListJsonString = sharedPreferences.getString("UserDetails", "");
-            Log.d("test3", "onCreate: 123 " + userInfoListJsonString);
+            Log.d("email&pass", userInfoListJsonString);
             if (!userInfoListJsonString.equals("")) {
                 Intent emailIntent = new Intent(LoginActivity.this, InboxActivity.class);
-                // emailIntent.putExtra("tokenValue", user.token);
                 startActivity(emailIntent);
                 finish();
             } else {
@@ -104,7 +103,6 @@ public class LoginActivity extends AppCompatActivity {
                                             Log.d("user", user.toString());
                                             Log.d("token", user.token);
 
-                                            //if(user.status.equals("ok")){
                                             Gson gson = new Gson();
                                             String userInfoListJsonString = gson.toJson(user);
                                             SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
@@ -113,12 +111,8 @@ public class LoginActivity extends AppCompatActivity {
                                             editor.commit();
 
                                             Intent emailIntent = new Intent(LoginActivity.this, InboxActivity.class);
-                                            // emailIntent.putExtra("tokenValue", user.token);
                                             startActivity(emailIntent);
                                             finish();
-                                    /*} else {
-                                        Toast.makeText(LoginActivity.this, "Login unsuccessful!", Toast.LENGTH_SHORT).show();
-                                    }  */
                                         } else {
                                             runOnUiThread(new Runnable() {
                                                 @Override
@@ -151,6 +145,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         }
-    }
 
 }
+
+

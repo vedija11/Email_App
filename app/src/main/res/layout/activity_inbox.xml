@@ -30,9 +30,8 @@
 
     <TextView
         android:id="@+id/tv_currentUser"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="44dp"
-        android:layout_marginStart="68dp"
         android:layout_marginTop="28dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
@@ -40,6 +39,8 @@
         android:textColor="#000000"
         android:textSize="24sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/btn_logout"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toEndOf="@+id/btn_createMail"
         app:layout_constraintTop_toTopOf="parent" />
 
