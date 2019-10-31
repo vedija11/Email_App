@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -95,7 +96,7 @@ public class SignUpActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
                             try {
-                                if(response.isSuccessful()){
+                                if (response.isSuccessful()) {
                                     JSONObject root = new JSONObject(response.body().string());
                                     newUser.status = root.getString("status");
                                     newUser.token = root.getString("token");
@@ -108,46 +109,43 @@ public class SignUpActivity extends AppCompatActivity {
                                     Log.d("globalUserList", globalUserList.toString());
                                     Log.d("token in signup Activity", newUser.token);
 
-                                    //if(newUser.status.equals("ok")){
-                                        Gson gson = new Gson();
-                                        String userInfoListJsonString = gson.toJson(newUser);
-                                        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
-                                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                                        editor.putString("NewUserDetails", userInfoListJsonString);
-                                        editor.commit();
+                                    Gson gson = new Gson();
+                                    String userInfoListJsonString = gson.toJson(newUser);
+                                    SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("sharedPreferences", MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putString("UserDetails", userInfoListJsonString);
+                                    editor.commit();
 
-                                        Toast.makeText(SignUpActivity.this, "User created successfully!", Toast.LENGTH_SHORT).show();
-                                        Intent emailIntent = new Intent(SignUpActivity.this, InboxActivity.class);
-                                        emailIntent.putExtra("tokenValue", newUser.token);
-                                        startActivity(emailIntent);
-                                        finish();
-                                    /*} else {
-                                        Toast.makeText(SignUpActivity.this, newUser.status, Toast.LENGTH_SHORT).show();
-                                    }*/
-                                } else {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            Toast.makeText(SignUpActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(SignUpActivity.this, "User created successfully!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                    Intent emailIntent = new Intent(SignUpActivity.this, InboxActivity.class);
+                                    startActivity(emailIntent);
+                                    finish();
+                                } else {
+                                    final JSONObject root = new JSONObject(response.body().string());
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                Toast.makeText(SignUpActivity.this, root.getString("message"), Toast.LENGTH_SHORT).show();
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
                                         }
                                     });
                                 }
-
-                                //String userInfoListJsonString1 = sharedPreferences.getString("NewUserDetails", "");
-                                //user =gson.fromJson(userInfoListJsonString1, User.class);
-                                //Log.d("user", String.valueOf(user));
-                                //Log.d("userInfoListJsonString", userInfoListJsonString);
-
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-
                         }
                     });
                 } else {
                     Toast.makeText(SignUpActivity.this, "Passwords do not match!", Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
 
