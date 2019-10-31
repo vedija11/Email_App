@@ -29,6 +29,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
+        android:ellipsize="end"
         android:focusable="false"
         android:maxLines="1"
         android:text="TextView"
@@ -39,8 +40,8 @@
 
     <ImageButton
         android:id="@+id/btn_delete"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_toRightOf="@id/tv_date"
         android:focusable="false"
         android:onClick="clickMe"

@@ -20,7 +20,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -36,6 +38,7 @@ public class InboxActivity extends AppCompatActivity {
     ImageButton btn_createMail, btn_logout;
     TextView tv_currentUser;
     User user = new User();
+    String setDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +81,7 @@ public class InboxActivity extends AppCompatActivity {
         adapter = new IndoxListViewAdapter(MailList, new IndoxListViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(InboxData item) {
-                InboxData selected_mail = MailList.get(MailList.indexOf((InboxData)item));
+                InboxData selected_mail = MailList.get(MailList.indexOf(item));
 
                 Intent displayIntent = new Intent(InboxActivity.this, DisplayActivity.class);
                 displayIntent.putExtra("SenderFName", selected_mail.sender_fname);
@@ -117,7 +120,17 @@ public class InboxActivity extends AppCompatActivity {
                     for (int i = 0; i < message.length(); i++) {
                         JSONObject each = message.getJSONObject(i);
                         InboxData mail = new InboxData();
-                        mail.created_at = each.getString("created_at");
+
+                        String createdAtDate = each.getString("created_at");
+                        if(!createdAtDate.equals("null")){
+                            //Date date = new Date();
+                            setDate = DateFormat.getDateInstance(DateFormat.MEDIUM).format(createdAtDate);
+                            Log.d("date", setDate);
+                        } else {
+                            setDate = createdAtDate;
+                        }
+
+                        mail.created_at = setDate;
                         mail.id = each.getString("id");
                         mail.message = each.getString("message");
                         mail.receiver_id = each.getString("receiver_id");

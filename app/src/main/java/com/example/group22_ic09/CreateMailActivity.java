@@ -66,9 +66,9 @@ public class CreateMailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 int index = dd_userList.getSelectedItemPosition();
-                String subject =et_subject.getText().toString();
-                String message =et_message.getText().toString();
-                if (index != 0 || !subject.equals("") || !message.equals("")) {
+                String subject = et_subject.getText().toString();
+                String message = et_message.getText().toString();
+                if (index != 0 && !subject.equals("") && !message.equals("")) {
                     User selected_user = users.get(index-1);
                     OkHttpClient okHttpClient = new OkHttpClient();
                     RequestBody formBody = new FormBody.Builder()
